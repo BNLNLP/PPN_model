@@ -1,8 +1,6 @@
 # Carlos X. Soto, csoto@bnl.gov, 2022
 
 import torch
-import torch.nn as nn
-import torch.nn.functional as F
 
 # expect cls_map.shape == [N,3,56,56]
 def get_pred_bars_ticks(pred_cls_map, pred_reg_map, pt_thresh = 0.8, conf_thresh = 0.5):
@@ -12,9 +10,9 @@ def get_pred_bars_ticks(pred_cls_map, pred_reg_map, pt_thresh = 0.8, conf_thresh
     ticks = [[] for im in range(pred_cls_map.shape[0])]
     
     # map of non-background points
-    pts_mask = F.sigmoid(pred_cls_map[:,0]).lt(pt_thresh)
+    pts_mask = torch.sigmoid(pred_cls_map[:,0]).lt(pt_thresh)
     
-    masked_bars = (F.sigmoid(pred_cls_map[:,1]) * pts_mask).gt(conf_thresh)
+    masked_bars = (torch.sigmoid(pred_cls_map[:,1]) * pts_mask).gt(conf_thresh)
     b_im, b_x, b_y = torch.nonzero(masked_bars, as_tuple=True)
     for im, x, y in zip(b_im, b_x, b_y):
         pos_x = (x.float() * 2 + 1) / (pts_mask.shape[1] * 2)    # MIDDLE of each point on 56x56 grid
@@ -22,10 +20,10 @@ def get_pred_bars_ticks(pred_cls_map, pred_reg_map, pt_thresh = 0.8, conf_thresh
         reg = pred_reg_map[im, :, x, y]
         pos_x += reg[0] / (pts_mask.shape[1] * 2)                # reg[0] corresponds to y, and vice-versa
         pos_y += reg[1] / (pts_mask.shape[2] * 2)
-        conf = F.sigmoid(pred_cls_map[im, 1, x, y])
+        conf = torch.sigmoid(pred_cls_map[im, 1, x, y])
         bars[im].append((pos_y, pos_x, conf))                    # x/y flipped
     
-    masked_ticks = (F.sigmoid(pred_cls_map[:,2]) * pts_mask).gt(conf_thresh)
+    masked_ticks = (torch.sigmoid(pred_cls_map[:,2]) * pts_mask).gt(conf_thresh)
     t_im, t_x, t_y = torch.nonzero(masked_ticks, as_tuple=True)
     for im, x, y in zip(t_im, t_x, t_y):
         pos_x = (x.float() * 2 + 1) / (pts_mask.shape[1] * 2)
@@ -33,7 +31,7 @@ def get_pred_bars_ticks(pred_cls_map, pred_reg_map, pt_thresh = 0.8, conf_thresh
         reg = pred_reg_map[im, :, x, y]
         pos_x += reg[0] / (pts_mask.shape[1] * 2)
         pos_y += reg[1] / (pts_mask.shape[2] * 2)
-        conf = F.sigmoid(pred_cls_map[im, 2, x, y])
+        conf = torch.sigmoid(pred_cls_map[im, 2, x, y])
         ticks[im].append((pos_y, pos_x, conf))                   # x/y flipped
 
     # non-maximum suppression here... can also apply some heuristic rules

@@ -1,5 +1,7 @@
 # Carlos X. Soto, csoto@bnl.gov, 2022
 
+import numpy as np
+
 # evaluation function (for a single image)
 def evaluate_pts(gt_bars, gt_ticks, pred_bars, pred_ticks, dist_thresh = 1.5 / 56):
     #for gb in gt_bars:

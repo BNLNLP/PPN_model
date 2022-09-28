@@ -5,6 +5,9 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
+id_to_name = {0: 'None', 1: 'bar', 2: 'tick'}
+name_to_id = {'None': 0, 'bar': 1, 'tick': 2}
+
 def score_points_list(gt_bars, gt_ticks, pred_bars, pred_ticks):
     pass
 

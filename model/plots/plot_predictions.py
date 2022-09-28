@@ -4,10 +4,12 @@ import os
 import sys
 import time
 from datetime import datetime
-from ../BarValueExtractor import BarValueExtractor
-from ../nms import nms
-import ../dataloaders
-import ../utils/metrics
+
+import torch
+from model.BarValueExtractor import BarValueExtractor
+from model.nms import nms
+import model.dataloaders
+import model.utils.metrics
 import matplotlib.pyplot as plt
 from PIL import Image, ImageDraw, ImageFont
 
@@ -145,11 +147,11 @@ for k, (img_path, img, targets) in enumerate(test_z_dataloader):
 
             # save class maps (gt & pred), (model img needs value scaling to 0-1 or 0-255)
             out_filename = os.path.join(out_im_dir, 'pointmap_' + path.split('/')[-1])
-            plt.imsave(out_filename, F.sigmoid(pred_cls_map.detach()[i,0] * -1.))
+            plt.imsave(out_filename, torch.sigmoid(pred_cls_map.detach()[i,0] * -1.))
             out_filename = os.path.join(out_im_dir, 'barmap_' + path.split('/')[-1])
-            plt.imsave(out_filename, F.sigmoid(pred_cls_map.detach()[i,1]))
+            plt.imsave(out_filename, torch.sigmoid(pred_cls_map.detach()[i,1]))
             out_filename = os.path.join(out_im_dir, 'tickmap_' + path.split('/')[-1])
-            plt.imsave(out_filename, F.sigmoid(pred_cls_map.detach()[i,2]))
+            plt.imsave(out_filename, torch.sigmoid(pred_cls_map.detach()[i,2]))
         
 #        out_filename = os.path.join(out_im_dir, 'gtmap_' + path.split('/')[-1])
 #        plt.imsave(out_filename, gt_cls_map[i])

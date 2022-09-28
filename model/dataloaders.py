@@ -1,17 +1,39 @@
 # Carlos X. Soto, csoto@bnl.gov, 2022
 
-from Datasets import BarDataset, ImageOnlyDataset
+import torch
 from torch.utils.data import DataLoader
+import datetime
 
+from model.Datasets import BarDataset, ImageOnlyDataset
+
+#checkpoint_dir = 'checkpoints'
+
+valid_datasets = ('augmented_bars', 'generated_bars',
+                  'generated_pies', 'manually_annotated',
+                  'zhou_2021')
+
+def get_dataloaders(dataset_id, bs):
+    assert dataset_id in valid_datasets, 'invalid dataset ID'
+    
+    im_path = f'datasets/{dataset_id}/imgs'
+    annot_path = f'datasets/{dataset_id}/annots'
+    train_list = f'datasets/{dataset_id}/train.txt'
+    val_list = f'datasets/{dataset_id}/val.txt'
+    
+    train_set = BarDataset(train_list, im_path, annot_path)
+    val_set = BarDataset(val_list, im_path, annot_path)
+    
+    train_dataloader = torch.utils.data.DataLoader(train_set, batch_size = bs, num_workers=8, shuffle = True)
+    val_dataloader = torch.utils.data.DataLoader(val_set, batch_size = bs, num_workers=8, shuffle = False)
+    
+    return train_dataloader, val_dataloader
+
+'''
 # Dataset and dataloader
-#dataset_list = 'generated_plots/train_small.txt'
-dataset_list = 'generated_plots/train.txt'
-test_list = 'generated_plots/test.txt'
-#im_path = 'generated_plots/imgs'
-#annot_path = 'generated_plots/annots'
-im_path = 'generated_plots/augmented_plots'
-annot_path = 'generated_plots/augmented_annots'
-checkpoint_dir = 'ppn_checkpoints/zhao'
+train_list = 'datasets/generated_bars/train.txt'
+test_list = 'datasets/generated_bars/test.txt'
+im_path = 'datasets/generated_bars/imgs'
+annot_path = 'datasets/generated_bars/annots'
 
 # new, isolated testset (not to be used for HPO)
 test2_im_path = 'generated_plots/testset_plots'
@@ -75,7 +97,7 @@ val_aug_dataloader = torch.utils.data.DataLoader(val_aug_set, batch_size = bs, n
 
 train_z_dataloader = torch.utils.data.DataLoader(train_z_set, batch_size = bs, num_workers=8, shuffle = True)
 test_z_dataloader = torch.utils.data.DataLoader(test_z_set, batch_size = bs, num_workers=8, shuffle = False)
-
+'''
 
 
 # LOG LOSSES AND BATCH TRAINING TIMES

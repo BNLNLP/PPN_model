@@ -30,18 +30,22 @@ mlp_lr = 1e-3
 optimizer = torch.optim.SGD(model.parameters(), lr=mlp_lr, momentum = 0.9)
 #optimizer = torch.optim.Adam(model.parameters(), lr=0.001, betas=(0.9, 0.999), eps=1e-08)
 
-# define print-to-console rate
-num_updates_per_epoch = 5
-update_steps = len(train_aug_dataloader.dataset) // (num_updates_per_epoch * bs)
-#update_steps = 1
+bs = 1
 
-start_epoch = 1600
-num_epochs = 1700
+# define print-to-console rate
+num_updates_per_epoch = 10
+update_steps = 1
+
+start_epoch = 0
+num_epochs = 50
 
 # detection and eval/error thresholds
 pnt_detect_thresh = 0.9
 cls_conf_thresh = 0.75
 eval_thresh = 1.5/56
+
+checkpoint_dir = 'checkpoints'
+dataset_id = 'generated_bars'
 
 if start_epoch:
     # load checkpoint
@@ -71,6 +75,10 @@ barPs, barRs, barF1s, tickPs, tickRs, tickF1s, meanF1s = [], [], [], [], [], [],
 # class weights: [None, bar, tick]
 class_weights = torch.tensor([0.05, 1., 1.]).to(device)
 
+
+train_dataloader, val_dataloader = get_dataloaders(dataset_id, bs)
+update_steps = len(train_dataloader.dataset) // (num_updates_per_epoch * bs)
+
 print('start training')
 for epoch in range(start_epoch, num_epochs):
     t = time.time()    
@@ -81,7 +89,7 @@ for epoch in range(start_epoch, num_epochs):
     epoch_pntreg_loss = 0.
     epoch_total_loss = 0.
     
-    for i, (img_path, img, targets) in enumerate(train_z_dataloader):
+    for i, (img_path, img, targets) in enumerate(train_dataloader):
         gt_orient, gt_origin, gt_cls_map, gt_reg_map, _, _ = targets
                 
         #img = img.to(device)
@@ -174,7 +182,7 @@ for epoch in range(start_epoch, num_epochs):
     # evaluate model loss on val set
     t = time.time()
     model.eval()
-    for i, (img_path, img, targets) in enumerate(test_z_dataloader):
+    for i, (img_path, img, targets) in enumerate(val_dataloader):
         with torch.no_grad():
             gt_orient, gt_origin, gt_cls_map, gt_reg_map, gt_bars, gt_ticks = targets
             gt_orient = gt_orient.to(device)
@@ -260,7 +268,7 @@ for epoch in range(start_epoch, num_epochs):
     vtimes.append(vtime)
 
     # save model
-    if (epoch + 1) % 20 == 0:
+    if (epoch + 1) % 10 == 0:
         checkpoint_name = f'ppn_chk_epoch_{epoch+1:04}.pth'
         checkpoint_path = os.path.join(checkpoint_dir, checkpoint_name)
 

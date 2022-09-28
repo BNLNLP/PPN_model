@@ -7,8 +7,12 @@ from torchvision import transforms
 from torch.utils.data import Dataset
 from torch.utils.data import DataLoader
 
+from model.utils.metrics import *
+from model.utils.map_conversions import *
+
 from PIL import Image
 import numpy as np
+import os
 
 def pad_to_square(img, pad_value):
     c, h, w = img.shape
@@ -30,8 +34,8 @@ inv_normalize = transforms.Normalize(mean=[-0.0882/0.0541, -0.0887/0.0540, -0.08
                                      std=[1/0.0541, 1/0.0540, 1/0.0543])
 
 
-id_to_name = {0: 'None', 1: 'bar', 2: 'tick'}
-name_to_id = {'None': 0, 'bar': 1, 'tick': 2}
+#id_to_name = {0: 'None', 1: 'bar', 2: 'tick'}
+#name_to_id = {'None': 0, 'bar': 1, 'tick': 2}
 
 class BarDataset(Dataset):
     def __init__(self, dataset_list, im_path, annot_path, img_size=224):

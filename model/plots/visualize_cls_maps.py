@@ -1,5 +1,6 @@
 # Carlos X. Soto, csoto@bnl.gov, 2022
 
+import torch
 import matplotlib.pyplot as plt
 from PIL import Image, ImageDraw, ImageFont
 
@@ -12,13 +13,13 @@ print(img_path[i])
 plt.subplot(3, 2, 1)
 plt.imshow(gt_cls_map[imnum])
 plt.subplot(3, 2, 2)
-plt.imshow(F.sigmoid(pred_cls_map.detach()[imnum,0] * -1.))
+plt.imshow(torch.sigmoid(pred_cls_map.detach()[imnum,0] * -1.))
 #plt.imshow(F.sigmoid(pred_cls_map.detach()[imnum,0]))
 #plt.imshow(pred_cls_map.detach()[imnum,0])
 plt.subplot(3, 2, 3)
-plt.imshow(F.sigmoid(pred_cls_map.detach()[imnum,1]))
+plt.imshow(torch.sigmoid(pred_cls_map.detach()[imnum,1]))
 plt.subplot(3, 2, 4)
-plt.imshow(F.sigmoid(pred_cls_map.detach()[imnum,2]))
+plt.imshow(torch.sigmoid(pred_cls_map.detach()[imnum,2]))
 #plt.show()
 
 plt.figure
