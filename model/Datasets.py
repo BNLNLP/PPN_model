@@ -103,7 +103,8 @@ class BarDataset(Dataset):
         
         orientation = orientation.unsqueeze(0)
         
-        targets = (orientation, origin, gt_cls_map, gt_reg_map, bars, ticks)
+        #targets = (orientation, origin, gt_cls_map, gt_reg_map, bars, ticks)
+        targets = (orientation, origin, gt_cls_map, gt_reg_map)
         
         return img_path, img, targets
     

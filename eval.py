@@ -27,11 +27,16 @@ from model.utils.map_conversions import *
 #checkpoint_dir = 'ppn_checkpoints/20211108_annot_3k-5k'
 #checkpoint_dir = 'ppn_checkpoints/20211003_synthetic'
 #checkpoint_dir = 'ppn_checkpoints'
-checkpoint_dir = 'ppn_checkpoints/submission_chks'
+#checkpoint_dir = 'ppn_checkpoints/submission_chks'
+checkpoint_dir = 'checkpoints'
 
 #eval_dataloader = val_aug_dataloader
 #eval_dataloader = test4_dataloader
-eval_dataloader = zhao_test_dl
+#eval_dataloader = zhao_test_dl
+
+bs = 1
+dataset_id = 'generated_bars'
+_, eval_dataloader = get_dataloaders(dataset_id, bs)
 
 # defaults
 #epoch = 9800
@@ -52,7 +57,8 @@ print('epoch, det_thresh, cls_thresh, ev_thresh, time, bar P, bar R, tick P, tic
 for eval_thresh in [2.8, 0.5]:
 #    eval_thresh = eval_thresh / 56
     
-    checkpoint_name = f'ppn_chk_epoch_{epoch:04}.pth'
+    #checkpoint_name = f'ppn_chk_epoch_{epoch:04}.pth'
+    checkpoint_name = 'synthetic_only.pth'
     checkpoint_path = os.path.join(checkpoint_dir, checkpoint_name)
 
     model = BarValueExtractor()
